@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>השתתפות בבניית הרובוט</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>בניית הרובוט</h1>
+
+    <p class="Description1">
+        הכירו את הרובוט החינוכי שלנו – חבר חכם ויצירתי לילדים!
+        הרובוט יודע להקשיב, להבין ולדבר בעברית, מזהה מחיאת כף, מציג הבעות פנים משתנות, עונה על שאלות, מספר סיפורים,
+        משמיע צלילים, ומגיב בצורה חכמה למצבים.
+        הוא מופעל בקלות דרך מסך מגע ומיועד לעורר סקרנות, לפתח שיחה, ולעזור בלמידה חווייתית – תוך שמירה על תכנים מותאמים
+        לילדים.
+    </p>
+
+    <p>אלו הרכיבים שנבחרו לפרויקט:</p>
+    <ul>
+        <li><a href="https://example.com/item1" target="_blank">חיישן קול</a></li>
+        <li><a href="https://example.com/item2" target="_blank">מסך מגע</a></li>
+        <li><a href="https://example.com/item3" target="_blank">רמקול חכם</a></li>
+    </ul>
+
+    <h3>שם מלא שלך:</h3>
+    <input type="text" id="nameInput" placeholder="הכנס שם">
+
+    <h3>בחר אחוז השתתפות:</h3>
+    <select id="percentSelect">
+        <option value="5">5%</option>
+        <option value="10">10%</option>
+        <option value="15">15%</option>
+        <option value="20">20%</option>
+    </select>
+
+    <br><br>
+    <button onclick="submitForm()">השתתף בבניית הרובוט</button>
+
+    <h3>משתתפים בפרויקט:</h3>
+    <table id="participantsTable">
+        <thead>
+            <tr>
+                <th>שם</th>
+                <th>אחוז השתתפות</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="total" id="totalPercent">סה"כ השתתפות: 0%</div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <script>
+        // ✅ לא נקרא supabase כדי לא להתנגש – שם חדש: client
+        const client = window.supabase.createClient(
+            "https://fqjfwtspitxhryirivdo.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxamZ3dHNwaXR4aHJ5aXJpdmRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDM0MzMsImV4cCI6MjA2NTUxOTQzM30.QQPn4JthlXVF1Fb0PzqShbUpzBmA-_WJ9Zc4up4zwKg"
+        );
+
+        const tableBody = document.querySelector("#participantsTable tbody");
+        const totalPercentEl = document.getElementById("totalPercent");
+
+        async function loadParticipants() {
+            const { data, error } = await client
+                .from("participants")
+                .select("*");
+
+            if (error) {
+                console.error("שגיאה בטעינה:", error.message);
+                return;
+            }
+
+            tableBody.innerHTML = "";
+            let total = 0;
+
+            data.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${row.name}</td><td>${row.percent}%</td>`;
+                tableBody.appendChild(tr);
+                total += row.percent;
+            });
+
+            totalPercentEl.textContent = `סה"כ השתתפות: ${total}%`;
+        }
+
+        async function submitForm() {
+            const name = document.getElementById("nameInput").value.trim();
+            const percent = parseInt(document.getElementById("percentSelect").value);
+
+            if (!name || isNaN(percent)) {
+                alert("אנא מלא שם ובחר אחוז תקין");
+                return;
+            }
+
+            const { error } = await client
+                .from("participants")
+                .insert([{ name, percent }]);
+
+            if (error) {
+                alert("שגיאה בשליחה: " + error.message);
+            } else {
+                document.getElementById("nameInput").value = "";
+                document.getElementById("percentSelect").selectedIndex = 0;
+                await loadParticipants();
+
+                // ✅ גלול אוטומטית לתחתית הדף
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+
+    </script>
+</body>
+
+</html>
