@@ -298,3 +298,17 @@ tr:last-child td {
         margin-bottom: 2px;
     }
 }
+
+
+.prohct123 {
+    background-color: #3c479977;
+    border-radius: 15px;
+    text-align: center;
+    padding: 10px 10px;
+    width: 80%;
+    margin: 0 auto;
+    color: #ffffff;
+    font-weight: bolder;
+    font-size: 5vw;
+    /* יישור אופקי */
+}
