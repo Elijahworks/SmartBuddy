@@ -270,19 +270,22 @@ tr:last-child td {
     border-radius: 50%;
     padding: 6px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    background-color: #ffffffcc;
+    background-color: #ffffff;
 }
 
 .goDownText {
-    font-size: 15px;
-    font-weight: bold;
-    color: #283493c7;
+    font-size: 20px;
+    font-weight: bolder;
+    color: #001add;
+    background-color: #3cee2542;
+    padding: 10px 10px;
+    border-radius: 20px;
     margin-bottom: 4px;
 }
 
 @media (max-width: 700px) {
     #goDownContainer {
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 100px) !important;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 0px) !important;
         /*⬅️ קצת יותר גבוה בטלפון*/
         right: 3px;
     }
@@ -311,4 +314,9 @@ tr:last-child td {
     font-weight: bolder;
     font-size: 5vw;
     /* יישור אופקי */
+}
+
+.ggg123 {
+    opacity: 0.3;
+    /* ערכים בין 0 (שקוף לגמרי) ל־1 (אטום) */
 }
