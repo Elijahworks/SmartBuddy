@@ -149,10 +149,11 @@ tr:last-child td {
 .total {
     text-align: center;
     font-size: 1.17rem;
-    color: #4a148c;
-    font-weight: 700;
+    color: #fdfdfd;
+    font-weight: bolder;
     margin-bottom: 32px;
-    background: #ede7f6;
+    font-size: 23px !important;
+    background: #b795e9;
     padding: 10px 0 13px 0;
     border-radius: 13px;
     width: 260px;
