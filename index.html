@@ -210,10 +210,12 @@
             <tr>
                 <th>שם</th>
                 <th>אחוז השתתפות</th>
+                <th>סכום בפועל (₪)</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
+
     <div id="bottom-section"></div>
 
     <div class="total" id="totalPercent">סה"כ השתתפו: 0%</div>
@@ -288,6 +290,89 @@
                 }
             });
         });
+
+        function extractPricesFromHTML() {
+            const spans = document.querySelectorAll("span");
+            let total = 0;
+            spans.forEach(span => {
+                const text = span.textContent;
+                let price = 0;
+
+                // מחיר בש"ח
+                if (text.includes("₪")) {
+                    price = parseFloat(text.replace(/[^\d.]/g, ''));
+                }
+
+                // מחיר בדולרים
+                if (text.includes("$")) {
+                    const match = text.match(/\$([\d.]+)/g);
+                    if (match) {
+                        match.forEach(m => {
+                            const val = parseFloat(m.replace("$", ""));
+                            price += val * 3.7; // שער המרה לדולר
+                        });
+                    }
+                }
+
+                total += price;
+            });
+            return total;
+        }
+
+        const totalProjectPrice = extractPricesFromHTML();
+
+        async function loadParticipants() {
+            const { data, error } = await client.from("participants").select("*");
+
+            if (error) {
+                console.error("שגיאה בטעינה:", error.message);
+                return;
+            }
+
+            const tableBody = document.querySelector("#participantsTable tbody");
+            tableBody.innerHTML = "";
+
+            let totalPercent = 0;
+
+            data.forEach(part => {
+                const amount = ((part.percent / 100) * totalProjectPrice).toFixed(2);
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+        <td>${part.name}</td>
+        <td>${part.percent}%</td>
+        <td>${amount} ₪</td>
+      `;
+                tableBody.appendChild(tr);
+                totalPercent += part.percent;
+            });
+
+            document.getElementById("totalPercent").textContent = `סה"כ השתתפו: ${totalPercent}%`;
+        }
+
+        async function submitForm() {
+            const name = document.getElementById("nameInput").value.trim();
+            const percent = parseInt(document.getElementById("percentSelect").value);
+
+            if (!name || isNaN(percent)) {
+                alert("אנא מלא שם ובחר אחוז תקין");
+                return;
+            }
+
+            const { error } = await client
+                .from("participants")
+                .insert([{ name, percent }]);
+
+            if (error) {
+                alert("שגיאה בשליחה: " + error.message);
+            } else {
+                document.getElementById("nameInput").value = "";
+                document.getElementById("percentSelect").selectedIndex = 0;
+                await loadParticipants();
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadParticipants);
     </script>
 </body>
 
