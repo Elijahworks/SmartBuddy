@@ -66,12 +66,15 @@ ul li a:hover {
 }
 
 h3 {
-    margin-right: 22vw;
-    margin-top: 26px;
+    margin: 26px auto 0;
     color: #283593;
     font-weight: 600;
     font-size: 1.15rem;
+    text-align: center;
+    width: fit-content;
+    /* חשוב כדי שיישור יעבוד נכון */
 }
+
 
 input[type="text"],
 select {
@@ -80,12 +83,17 @@ select {
     padding: 8px 12px;
     border: 1.5px solid #b2bec3;
     border-radius: 7px;
-    margin-right: 22vw;
-    margin-bottom: 8px;
+    margin: 8px auto;
+    /* מרכז אופקי */
     background: #f7fafd;
     outline: none;
     transition: border 0.2s;
+    display: block;
+    /* דרוש כדי ש-margin: auto יעבוד */
+    width: fit-content;
+    /* או אפשר לתת width קבוע */
 }
+
 
 input[type="text"]:focus,
 select:focus {
@@ -203,6 +211,25 @@ tr:last-child td {
         box-sizing: border-box;
     }
 
+    h3 {
+        color: #283593;
+        font-weight: 600;
+        font-size: 1.15rem;
+        text-align: right;
+        margin: 20px 5vw 8px 0;
+    }
+
+    .ggg {
+
+        margin: 26px auto 20px;
+        color: #283593;
+        font-weight: 600;
+        font-size: 1.15rem;
+        text-align: center;
+        width: fit-content;
+    }
+
+
     button {
         width: 85vw;
         font-size: 1rem;
@@ -224,5 +251,50 @@ tr:last-child td {
         display: block;
         height: 80px;
         /* הגדלת הרווח לסיום גלילה נוח גם במקלדת */
+    }
+}
+
+#goDownContainer {
+    position: fixed;
+    bottom: 0 !important;
+    /* ⬅️ גבוה יותר כדי לא להיבלע */
+    right: 20px;
+    text-align: center;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+#goDownContainer img {
+    height: 54px;
+    width: 54px;
+    border-radius: 50%;
+    padding: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: #ffffffcc;
+}
+
+.goDownText {
+    font-size: 15px;
+    font-weight: bold;
+    color: #283493c7;
+    margin-bottom: 4px;
+}
+
+@media (max-width: 700px) {
+    #goDownContainer {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 100px) !important;
+        /*⬅️ קצת יותר גבוה בטלפון*/
+        right: 3px;
+    }
+
+    #goDownContainer img {
+        height: 48px;
+        width: 48px;
+        padding: 4px;
+    }
+
+    .goDownText {
+        font-size: 15px;
+        margin-bottom: 2px;
     }
 }
