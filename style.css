@@ -185,9 +185,13 @@ tr:last-child td {
     ul,
     table {
         width: 95vw;
-        max-width: 95vw;
+        max-width: 500px;
+        /* אם אתה רוצה להגביה גבול */
         margin-left: auto;
         margin-right: auto;
+        text-align: center;
+        /* מיישר את התוכן */
+        padding: 0;
     }
 
     h3,
