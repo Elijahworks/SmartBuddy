@@ -161,7 +161,7 @@ async function speak(text) {
       headers: {
         "Content-Type": "application/json"
       },
-body: JSON.stringify({ input: "שלום, מה שלומך היום?" })
+      body: JSON.stringify({ input: text })
     });
 
     const contentType = res.headers.get("Content-Type");
