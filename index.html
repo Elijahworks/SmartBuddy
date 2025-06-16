@@ -166,29 +166,34 @@ fetch('smart_robot_responses.json')
 
 document.addEventListener("DOMContentLoaded", loadParticipants);
 
-// ✅ דיבור עם OpenAI TTS דרך Cloudflare Worker
 async function speak(text) {
   try {
-const res = await fetch("https://polished-sun-142c.netzach3020.workers.dev", {
+    const res = await fetch("https://polished-sun-142c.netzach3020.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ input: text })
     });
 
-    if (!res.ok) {
-      console.error("🔴 שגיאה בהבאת קול:", await res.text());
-      fallbackSpeak(text); // fallback אם השרת לא מגיב
+    const contentType = res.headers.get("Content-Type");
+
+    if (!res.ok || !contentType || !contentType.includes("audio")) {
+      const errorText = await res.text();
+      console.error("🔴 לא חזר אודיו תקין:", errorText);
+      fallbackSpeak(text); // גיבוי רגיל
       return;
     }
 
     const blob = await res.blob();
-    const audio = new Audio(URL.createObjectURL(blob));
+    const audioURL = URL.createObjectURL(blob);
+    const audio = new Audio(audioURL);
     audio.play();
   } catch (err) {
     console.error("🔴 שגיאה כללית בקול:", err);
-    fallbackSpeak(text); // fallback
+    fallbackSpeak(text);
   }
 }
+
+
 
 // ✅ fallback לדיבור רגיל מהדפדפן
 function fallbackSpeak(text) {
