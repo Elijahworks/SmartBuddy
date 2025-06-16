@@ -178,12 +178,12 @@ async function speak(text) {
     });
 
     const contentType = res.headers.get("Content-Type");
+if (!res.ok || !contentType || !contentType.includes("audio")) {
+  const errorText = await res.text();
+  console.error("🔴 לא חזר אודיו תקין:", errorText);
+  return;
+}
 
-    if (!res.ok || !contentType || !contentType.includes("audio")) {
-      const errorText = await res.text();
-      console.error("🔴 לא חזר אודיו תקין:", errorText);
-      return;
-    }
 
     const blob = await res.blob();
     const audioURL = URL.createObjectURL(blob);
@@ -194,18 +194,6 @@ async function speak(text) {
   }
 }
 
-
-
-
-// ✅ fallback לדיבור רגיל מהדפדפן
-function fallbackSpeak(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = 'he-IL';
-  msg.pitch = 1;
-  msg.rate = 0.95;
-  msg.volume = 1;
-  window.speechSynthesis.speak(msg);
-}
 
 // ✅ עדכון בפונקציה שמגיבה למשתמש
 async function respondToUser(userText) {
@@ -237,7 +225,6 @@ function playAudio(fileName) {
   const audio = new Audio(`audio/${fileName}`);
   audio.play().catch(err => {
     console.error("🔴 שגיאה בהפעלת audio:", err);
-    fallbackSpeak("לא הצלחתי להפעיל את הצליל.");
   });
 }
 
