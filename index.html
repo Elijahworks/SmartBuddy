@@ -27,6 +27,7 @@
 
   <button onclick="startListening()">🎤 לחץ כאן כדי לדבר עם AI </button>
   <div id="banner">...</div>
+<button onclick="speak('התחלתי לדבר, שומעים אותי?')">בדוק אם אני מדבר</button>
 
 
     <p class="prohct123">👇אלו הרכיבים שנבחרו לפרויקט👇</p>
@@ -296,16 +297,12 @@ function showBanner(text) {
 function speak(text) {
   const synth = window.speechSynthesis;
 
-  function waitAndSpeak() {
+  function speakNow() {
     const voices = synth.getVoices();
     const hebrewVoice = voices.find(v => v.lang === 'he-IL');
 
-    if (!hebrewVoice) {
-      console.warn("לא נמצא קול בעברית. מדבר עם ברירת מחדל.");
-    }
-
     const msg = new SpeechSynthesisUtterance(text);
-    msg.voice = hebrewVoice || voices[0];
+    msg.voice = hebrewVoice || voices[0]; // אם אין עברית, בחר כל קול זמין
     msg.lang = 'he-IL';
     msg.pitch = 1;
     msg.rate = 0.95;
@@ -315,12 +312,12 @@ function speak(text) {
   }
 
   if (synth.getVoices().length === 0) {
-    // טען את הקולות לפני הדיבור
-    synth.addEventListener('voiceschanged', waitAndSpeak);
+    synth.addEventListener('voiceschanged', speakNow);
   } else {
-    waitAndSpeak();
+    speakNow();
   }
 }
+
 
 
     </script>
