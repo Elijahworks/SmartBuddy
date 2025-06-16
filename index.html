@@ -158,12 +158,19 @@ document.addEventListener("DOMContentLoaded", loadParticipants);
 function speak(text) {
   const synth = window.speechSynthesis;
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "he-IL";       // עברית
-  utter.rate = 1.4;           // מהירות הדיבור (1 רגיל, 1.2 מהיר יותר)
-  utter.pitch = 1;            // גובה קול (1 רגיל)
-  synth.cancel();             // כדי לבטל כל השמעה קודמת
-  synth.speak(utter);         // מדבר!
+  utter.lang = "he-IL";
+  utter.rate = 1.2;
+  utter.pitch = 1;
+
+  // נסה להמתין קצת כדי לוודא שהקולות נטענו
+  const voices = synth.getVoices();
+  const voice = voices.find(v => v.lang === "he-IL") || voices[0];
+  if (voice) utter.voice = voice;
+
+  synth.cancel();
+  synth.speak(utter);
 }
+
 
 
 
