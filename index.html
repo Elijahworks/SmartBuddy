@@ -205,6 +205,7 @@ function speak(text) {
 }
 
 async function askGPT(text) {
+  console.log("📤 שולח ל־GPT:", text);
   try {
     const res = await fetch("https://polished-sun-142c.netzach3020.workers.dev", {
       method: "POST",
@@ -214,33 +215,43 @@ async function askGPT(text) {
       body: JSON.stringify({ prompt: text })
     });
 
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("❌ שגיאת רשת:", res.status, errorText);
+      return `שגיאת רשת: ${res.status}`;
+    }
+
     const data = await res.json();
+    console.log("📥 תשובה מ־GPT:", data);
     return data.choices?.[0]?.message?.content || "❌ לא קיבלתי תשובה מהשרת.";
   } catch (error) {
+    console.error("❌ שגיאה:", error);
     return "❌ שגיאה בשליחה לשרת: " + error.message;
   }
 }
 
+function startListening() {
+  console.log("🎙️ התחלת האזנה...");
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'he-IL';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
- function startListening() {
-    const recognition = new webkitSpeechRecognition();
-    recognition.lang = 'he-IL';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+  recognition.onresult = async function (event) {
+    const transcript = event.results[0][0].transcript.trim();
+    console.log("🗣️ זוהה טקסט:", transcript);
+    const reply = await askGPT(transcript);
+    showBanner(reply);
+    speak(reply);
+  };
 
-    recognition.onresult = async function (event) {
-      const transcript = event.results[0][0].transcript.trim();
-      const reply = await askGPT(transcript);
-      showBanner(reply);
-      speak(reply);
-    };
+  recognition.onerror = function (event) {
+    console.error("🎙️ שגיאה בזיהוי קול:", event.error);
+    showBanner("❌ שגיאה בזיהוי קול: " + event.error);
+  };
 
-    recognition.onerror = function (event) {
-      showBanner("❌ שגיאה בזיהוי קול: " + event.error);
-    };
-
-    recognition.start();
-  }
+  recognition.start();
+}
 
   function showBanner(text) {
     const banner = document.getElementById("banner");
