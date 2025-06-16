@@ -182,7 +182,6 @@ async function speak(text) {
     if (!res.ok || !contentType || !contentType.includes("audio")) {
       const errorText = await res.text();
       console.error("🔴 לא חזר אודיו תקין:", errorText);
-      fallbackSpeak(text); // גיבוי רגיל
       return;
     }
 
@@ -192,9 +191,9 @@ async function speak(text) {
     audio.play();
   } catch (err) {
     console.error("🔴 שגיאה כללית בקול:", err);
-    fallbackSpeak(text);
   }
 }
+
 
 
 
