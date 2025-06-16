@@ -228,8 +228,16 @@ async function respondToUser(userText) {
     showBanner(reply);
     speak(reply); // מדבר עם OpenAI TTS
   }
+
 }
 
+function playAudio(fileName) {
+  const audio = new Audio(`audio/${fileName}`);
+  audio.play().catch(err => {
+    console.error("🔴 שגיאה בהפעלת audio:", err);
+    fallbackSpeak("לא הצלחתי להפעיל את הצליל.");
+  });
+}
 
 async function askGPT(text) {
   console.log("📤 שולח ל־GPT:", text);
