@@ -294,13 +294,34 @@ function showBanner(text) {
 }
 
 function speak(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = 'he-IL';
-  msg.pitch = 1;
-  msg.rate = 0.95;
-  msg.volume = 1; // 1 זה הכי חזק
-  window.speechSynthesis.speak(msg);
+  const synth = window.speechSynthesis;
+
+  function waitAndSpeak() {
+    const voices = synth.getVoices();
+    const hebrewVoice = voices.find(v => v.lang === 'he-IL');
+
+    if (!hebrewVoice) {
+      console.warn("לא נמצא קול בעברית. מדבר עם ברירת מחדל.");
+    }
+
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.voice = hebrewVoice || voices[0];
+    msg.lang = 'he-IL';
+    msg.pitch = 1;
+    msg.rate = 0.95;
+    msg.volume = 1;
+
+    synth.speak(msg);
+  }
+
+  if (synth.getVoices().length === 0) {
+    // טען את הקולות לפני הדיבור
+    synth.addEventListener('voiceschanged', waitAndSpeak);
+  } else {
+    waitAndSpeak();
+  }
 }
+
 
     </script>
 </body>
