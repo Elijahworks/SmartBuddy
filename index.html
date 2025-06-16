@@ -156,19 +156,21 @@ document.addEventListener("DOMContentLoaded", loadParticipants);
 
 async function speak(text) {
   try {
-    const res = await fetch("https://polished-sun-142c.netzach3020.workers.dev", {
+    const res = await fetch("https://lucky-grass-b400.netzach3020.workers.dev/", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ input: text })
     });
 
     const contentType = res.headers.get("Content-Type");
-if (!res.ok || !contentType || !contentType.includes("audio")) {
-  const errorText = await res.text();
-  console.error("🔴 לא חזר אודיו תקין:", errorText);
-  return;
-}
 
+    if (!res.ok || !contentType || !contentType.includes("audio")) {
+      const errorText = await res.text();
+      console.error("🔴 לא חזר אודיו תקין:", errorText);
+      return;
+    }
 
     const blob = await res.blob();
     const audioURL = URL.createObjectURL(blob);
@@ -178,6 +180,7 @@ if (!res.ok || !contentType || !contentType.includes("audio")) {
     console.error("🔴 שגיאה כללית בקול:", err);
   }
 }
+
 
 
 // ✅ עדכון בפונקציה שמגיבה למשתמש
