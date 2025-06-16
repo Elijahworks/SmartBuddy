@@ -151,19 +151,6 @@ function extractPricesFromHTML() {
     return total;
 }
 
-// ✅ טעינת קובץ התגובות החכמות (מ־JSON) לצורך זיהוי תגובות מוכנות מראש
-let responses = [];
-
-fetch('smart_robot_responses.json')
-  .then(res => res.json())
-  .then(data => {
-    responses = data;
-    console.log("✅ responses נטענו:", responses);
-  })
-  .catch(err => console.error("❌ שגיאה בטעינת תגובות:", err));
-
-// ✅ לאחר הטעינה – המערכת תוכל לזהות מילים ולתת תשובות מותאמות לפי הקובץ
-
 document.addEventListener("DOMContentLoaded", loadParticipants);
 
 async function speak(text) {
@@ -279,16 +266,16 @@ function startListening() {
   recognition.maxAlternatives = 1;
 
   recognition.onresult = async function (event) {
-  const transcript = event.results[0][0].transcript.trim();
-  if (!transcript) {
-    showBanner("❌ לא קלטתי מה אמרת.");
-    return;
-  }
-  console.log("🗣️ זוהה טקסט:", transcript);
-  const reply = await askGPT(transcript);
-  showBanner(reply);
-  speak(reply);
-};
+    const transcript = event.results[0][0].transcript.trim();
+    if (!transcript) {
+      showBanner("❌ לא קלטתי מה אמרת.");
+      return;
+    }
+    console.log("🗣️ זוהה טקסט:", transcript);
+    const reply = await askGPT(transcript);
+    showBanner(reply);
+    speak(reply);
+  };
 
   recognition.onerror = function (event) {
     console.error("🎙️ שגיאה בזיהוי קול:", event.error);
@@ -298,11 +285,6 @@ function startListening() {
   recognition.start();
 }
 
-  function showBanner(text) {
-    const banner = document.getElementById("banner");
-    banner.textContent = text;
-    banner.style.display = "block";
-  }
 
   document.getElementById("talkBtn").addEventListener("click", startListening);
     </script>
