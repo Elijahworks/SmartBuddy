@@ -259,6 +259,12 @@ async function askGPT(text) {
   }
 }
 
+function showBanner(text) {
+  const banner = document.getElementById("banner");
+  banner.textContent = text;
+  banner.style.display = "block";
+}
+
 
 function startListening() {
   console.log("🎙️ התחלת האזנה...");
