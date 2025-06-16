@@ -267,23 +267,6 @@ function startListening() {
     msg.volume = 1;
     window.speechSynthesis.speak(msg);
   }
-
-  async function askGPT(text) {
-    try {
-      const res = await fetch("http://localhost:3000/ask", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt: text })
-      });
-
-      const data = await res.json();
-      return data.choices?.[0]?.message?.content || "❌ לא קיבלתי תשובה מהשרת.";
-    } catch (error) {
-      return "❌ שגיאה בשליחה לשרת: " + error.message;
-    }
-  }
   document.getElementById("talkBtn").addEventListener("click", startListening);
 
     </script>
