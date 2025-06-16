@@ -25,9 +25,8 @@
         <img src="images/chevron.png" class="ggg123" alt="בוא נרד לעניין">
     </div>
 
-  <button onclick="startListening()">🎤 לחץ כאן כדי לדבר עם AI </button>
+<button id="talkBtn">🎤 לחץ כאן כדי לדבר עם AI</button>
   <div id="banner">...</div>
-<button onclick="speak('התחלתי לדבר, שומעים אותי?')">בדוק אם אני מדבר</button>
 
 
     <p class="prohct123">👇אלו הרכיבים שנבחרו לפרויקט👇</p>
@@ -86,239 +85,194 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
     <script>
-        // ✅ לא נקרא supabase כדי לא להתנגש – שם חדש: client
-        const client = window.supabase.createClient(
-            "https://fqjfwtspitxhryirivdo.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxamZ3dHNwaXR4aHJ5aXJpdmRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDM0MzMsImV4cCI6MjA2NTUxOTQzM30.QQPn4JthlXVF1Fb0PzqShbUpzBmA-_WJ9Zc4up4zwKg"
-        );
+       // ✅ יצירת חיבור ל-Supabase
+const client = window.supabase.createClient(
+    "https://fqjfwtspitxhryirivdo.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxamZ3dHNwaXR4aHJ5aXJpdmRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDM0MzMsImV4cCI6MjA2NTUxOTQzM30.QQPn4JthlXVF1Fb0PzqShbUpzBmA-_WJ9Zc4up4zwKg"
+);
 
-        const tableBody = document.querySelector("#participantsTable tbody");
-        const totalPercentEl = document.getElementById("totalPercent");
+const tableBody = document.querySelector("#participantsTable tbody");
+const totalPercentEl = document.getElementById("totalPercent");
 
-        async function loadParticipants() {
-            const { data, error } = await client
-                .from("participants")
-                .select("*");
+// ✅ טעינת משתתפים מה-DB
+async function loadParticipants() {
+    const { data, error } = await client.from("participants").select("*");
+    if (error) return console.error("שגיאה בטעינה:", error.message);
 
-            if (error) {
-                console.error("שגיאה בטעינה:", error.message);
-                return;
-            }
+    tableBody.innerHTML = "";
+    let totalPercent = 0;
+    const totalPrice = extractPricesFromHTML();
 
-            tableBody.innerHTML = "";
-            let total = 0;
+    data.forEach(part => {
+        const amount = ((part.percent / 100) * totalPrice).toFixed(2);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${part.name}</td><td>${part.percent}%</td><td>${amount} ₪</td>`;
+        tableBody.appendChild(tr);
+        totalPercent += part.percent;
+    });
 
-            data.forEach(row => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row.name}</td><td>${row.percent}%</td>`;
-                tableBody.appendChild(tr);
-                total += row.percent;
-            });
-
-            totalPercentEl.textContent = `סה"כ השתתפו: ${total}%`;
-        }
-
-        async function submitForm() {
-            const name = document.getElementById("nameInput").value.trim();
-            const percent = parseInt(document.getElementById("percentSelect").value);
-
-            if (!name || isNaN(percent)) {
-                alert("אנא מלא שם ובחר אחוז תקין");
-                return;
-            }
-
-            const { error } = await client
-                .from("participants")
-                .insert([{ name, percent }]);
-
-            if (error) {
-                alert("שגיאה בשליחה: " + error.message);
-            } else {
-                document.getElementById("nameInput").value = "";
-                document.getElementById("percentSelect").selectedIndex = 0;
-                await loadParticipants();
-
-                // ✅ גלול אוטומטית לתחתית הדף
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const btn = document.getElementById("goDownBtn");
-            btn.addEventListener("click", function () {
-                const target = document.getElementById("bottom-section");
-                if (target) {
-                    target.scrollIntoView({ behavior: "smooth" });
-                }
-            });
-        });
-
-        function extractPricesFromHTML() {
-            const spans = document.querySelectorAll("span");
-            let total = 0;
-            spans.forEach(span => {
-                const text = span.textContent;
-                let price = 0;
-
-                // מחיר בש"ח
-                if (text.includes("₪")) {
-                    price = parseFloat(text.replace(/[^\d.]/g, ''));
-                }
-
-                // מחיר בדולרים
-                if (text.includes("$")) {
-                    const match = text.match(/\$([\d.]+)/g);
-                    if (match) {
-                        match.forEach(m => {
-                            const val = parseFloat(m.replace("$", ""));
-                            price += val * 3.7; // שער המרה לדולר
-                        });
-                    }
-                }
-
-                total += price;
-            });
-            return total;
-        }
-
-        const totalProjectPrice = extractPricesFromHTML();
-
-        async function loadParticipants() {
-            const { data, error } = await client.from("participants").select("*");
-
-            if (error) {
-                console.error("שגיאה בטעינה:", error.message);
-                return;
-            }
-
-            const tableBody = document.querySelector("#participantsTable tbody");
-            tableBody.innerHTML = "";
-
-            let totalPercent = 0;
-
-            data.forEach(part => {
-                const amount = ((part.percent / 100) * totalProjectPrice).toFixed(2);
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-        <td>${part.name}</td>
-        <td>${part.percent}%</td>
-        <td>${amount} ₪</td>
-      `;
-                tableBody.appendChild(tr);
-                totalPercent += part.percent;
-            });
-
-            document.getElementById("totalPercent").textContent = `סה"כ השתתפו: ${totalPercent}%`;
-        }
-
-        async function submitForm() {
-            const name = document.getElementById("nameInput").value.trim();
-            const percent = parseInt(document.getElementById("percentSelect").value);
-
-            if (!name || isNaN(percent)) {
-                alert("אנא מלא שם ובחר אחוז תקין");
-                return;
-            }
-
-            const { error } = await client
-                .from("participants")
-                .insert([{ name, percent }]);
-
-            if (error) {
-                alert("שגיאה בשליחה: " + error.message);
-            } else {
-                document.getElementById("nameInput").value = "";
-                document.getElementById("percentSelect").selectedIndex = 0;
-                await loadParticipants();
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", loadParticipants);
-let responses = [];
-
-// החלף כאן ב־URL האמיתי של הקובץ שלך בסופראבייס
-const SUPABASE_FILE_URL = 'https://fqjfwtspitxhryirivdo.supabase.co/storage/v1/object/public/public123//smart_robot_responses.json';
-
-fetch(SUPABASE_FILE_URL)
-  .then(res => res.json()) // ✅ סוגריים חובה
-  .then(data => responses = data)
-  .catch(() => {
-    showBanner("שגיאה בטעינת הקובץ.");
-  });
-
-function startListening() {
-  if (!('webkitSpeechRecognition' in window)) {
-    showBanner("זיהוי קולי לא נתמך בדפדפן הזה.");
-    return;
-  }
-
-  const recognition = new webkitSpeechRecognition();
-  recognition.lang = 'he-IL';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript.trim();
-    respondToUser(transcript);
-  };
-
-  recognition.onerror = function(event) {
-    showBanner("שגיאה: " + event.error);
-  };
-
-  recognition.start();
+    totalPercentEl.textContent = `סה\"כ השתתפו: ${totalPercent}%`;
 }
 
-function respondToUser(userText) {
-  const lower = userText.toLowerCase();
-  let reply = "מה מה אל תדליק אותי  אתה לא מכיר אותי שאני לא יתהפך עליך";
+// ✅ שליחת משתתף חדש
+async function submitForm() {
+    const name = document.getElementById("nameInput").value.trim();
+    const percent = parseInt(document.getElementById("percentSelect").value);
+    if (!name || isNaN(percent)) return alert("אנא מלא שם ובחר אחוז תקין");
 
-  for (const item of responses) {
-    for (const keyword of item.keywords) {
-      if (lower.includes(keyword)) {
-        reply = item.response;
-        break;
-      }
+    const { error } = await client.from("participants").insert([{ name, percent }]);
+    if (error) return alert("שגיאה בשליחה: " + error.message);
+
+    document.getElementById("nameInput").value = "";
+    document.getElementById("percentSelect").selectedIndex = 0;
+    await loadParticipants();
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+// ✅ מחשב סכום כולל מה-HTML
+function extractPricesFromHTML() {
+    const spans = document.querySelectorAll("span");
+    let total = 0;
+    spans.forEach(span => {
+        const text = span.textContent;
+        let price = 0;
+        if (text.includes("₪")) price = parseFloat(text.replace(/[^\d.]/g, ''));
+        if (text.includes("$")) {
+            const match = text.match(/\$([\d.]+)/g);
+            if (match) {
+                match.forEach(m => {
+                    const val = parseFloat(m.replace("$", ""));
+                    price += val * 3.7;
+                });
+            }
+        }
+        total += price;
+    });
+    return total;
+}
+
+document.addEventListener("DOMContentLoaded", loadParticipants);
+
+// ✅ בינה מלאכותית - תגובות
+let responses = [];
+fetch('smart_robot_responses.json')
+  .then(res => res.json())
+  .then(data => responses = data)
+  .catch(() => showBanner("שגיאה בטעינת הקובץ."));
+
+async function respondToUser(userText) {
+    const lower = userText.toLowerCase();
+    let match = null;
+
+    for (const item of responses) {
+        for (const keyword of item.keywords || []) {
+            if (lower.includes(keyword)) {
+                match = item;
+                break;
+            }
+        }
+        if (match) break;
     }
-    if (reply !== "מה מה אל תדליק אותי  אתה לא מכיר אותי שאני לא יתהפך עליך") break;
-  }
 
-  showBanner(reply);
-  speak(reply);
+    if (match) {
+        showBanner(match.response);
+        match.audio ? playAudio(match.audio) : speak(match.response);
+    } else {
+        const reply = await askGPT(userText);
+        showBanner(reply);
+        speak(reply);
+    }
 }
 
 function showBanner(text) {
-  const banner = document.getElementById("banner");
-  banner.textContent = text;
-  banner.style.display = "block";
+    const banner = document.getElementById("banner");
+    banner.textContent = text;
+    banner.style.display = "block";
+}
+
+function playAudio(src) {
+    const audio = new Audio(src);
+    audio.play();
 }
 
 function speak(text) {
-  const synth = window.speechSynthesis;
-
-  function speakNow() {
-    const voices = synth.getVoices();
-    const hebrewVoice = voices.find(v => v.lang === 'he-IL');
-
     const msg = new SpeechSynthesisUtterance(text);
-    msg.voice = hebrewVoice || voices[0]; // אם אין עברית, בחר כל קול זמין
     msg.lang = 'he-IL';
     msg.pitch = 1;
     msg.rate = 0.95;
     msg.volume = 1;
+    window.speechSynthesis.speak(msg);
+}
 
-    synth.speak(msg);
-  }
+async function askGPT(text) {
+  try {
+    const res = await fetch("https://polished-sun-142c.netzach3020.workers.dev", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt: text })
+    });
 
-  if (synth.getVoices().length === 0) {
-    synth.addEventListener('voiceschanged', speakNow);
-  } else {
-    speakNow();
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || "❌ לא קיבלתי תשובה מהשרת.";
+  } catch (error) {
+    return "❌ שגיאה בשליחה לשרת: " + error.message;
   }
 }
 
 
+ function startListening() {
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'he-IL';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = async function (event) {
+      const transcript = event.results[0][0].transcript.trim();
+      const reply = await askGPT(transcript);
+      showBanner(reply);
+      speak(reply);
+    };
+
+    recognition.onerror = function (event) {
+      showBanner("❌ שגיאה בזיהוי קול: " + event.error);
+    };
+
+    recognition.start();
+  }
+
+  function showBanner(text) {
+    const banner = document.getElementById("banner");
+    banner.textContent = text;
+    banner.style.display = "block";
+  }
+
+  function speak(text) {
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'he-IL';
+    msg.pitch = 1;
+    msg.rate = 0.95;
+    msg.volume = 1;
+    window.speechSynthesis.speak(msg);
+  }
+
+  async function askGPT(text) {
+    try {
+      const res = await fetch("http://localhost:3000/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt: text })
+      });
+
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || "❌ לא קיבלתי תשובה מהשרת.";
+    } catch (error) {
+      return "❌ שגיאה בשליחה לשרת: " + error.message;
+    }
+  }
 
     </script>
 </body>
