@@ -209,6 +209,20 @@ async function respondToUser(userText) {
 
 }
 
+let responses = [];
+
+// טעינת קובץ התגובות
+fetch("smart_robot_responses.json")
+  .then(res => res.json())
+  .then(data => {
+    responses = data;
+    console.log("✅ responses loaded", responses);
+  })
+  .catch(err => {
+    console.error("🔴 שגיאה בטעינת קובץ התשובות:", err);
+  });
+
+
 function playAudio(fileName) {
   const audio = new Audio(`audio/${fileName}`);
   audio.play().catch(err => {
