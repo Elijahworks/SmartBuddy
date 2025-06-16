@@ -261,36 +261,22 @@ function startListening() {
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
- recognition.onresult = async function (event) {
-  const transcript = event.results[0][0].transcript.trim();
-  if (!transcript) {
-    showBanner("❌ לא קלטתי מה אמרת.");
-    return;
-  }
-  console.log("🗣️ זוהה טקסט:", transcript);
-
-  const lower = transcript.toLowerCase();
-  let match = null;
-
-  for (const item of responses) {
-    for (const keyword of item.keywords || []) {
-      if (lower.includes(keyword)) {
-        match = item;
-        break;
-      }
+  recognition.onresult = async function (event) {
+    const transcript = event.results[0][0].transcript.trim();
+    if (!transcript) {
+      showBanner("❌ לא קלטתי מה אמרת.");
+      return;
     }
-    if (match) break;
-  }
-
-  if (match) {
-    showBanner(match.response);
-    match.audio ? playAudio(match.audio) : speak(match.response);
-  } else {
+    console.log("🗣️ זוהה טקסט:", transcript);
     const reply = await askGPT(transcript);
     showBanner(reply);
     speak(reply);
-  }
-};
+  };
+
+  recognition.onerror = function (event) {
+    console.error("🎙️ שגיאה בזיהוי קול:", event.error);
+    showBanner("❌ שגיאה בזיהוי קול: " + event.error);
+  };
 
   recognition.start();
 }
