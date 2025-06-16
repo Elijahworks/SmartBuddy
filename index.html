@@ -241,28 +241,32 @@ function playAudio(fileName) {
 
 async function askGPT(text) {
   if (!text || typeof text !== "string" || !text.trim()) {
-    console.warn("⛔ טקסט ריק או לא תקין נשלח ל־askGPT");
-    return "לא קיבלתי טקסט ברור לשאלה.";
+    console.warn("⚠️ נשלח טקסט ריק ל־GPT:", text);
+    return "לא הבנתי אותך, נסה שוב.";
   }
 
+  console.log("📤 שולח ל־GPT:", text);
   try {
     const res = await fetch("https://polished-sun-142c.netzach3020.workers.dev", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ prompt: text })
     });
 
-    const data = await res.json();
-
     if (!res.ok) {
-      console.error("❌ שגיאה מהשרת:", data);
-      return `שגיאה מהשרת: ${data?.error?.message || "לא ידועה"}`;
+      const errorText = await res.text();
+      console.error("❌ שגיאת רשת:", res.status, errorText);
+      return `שגיאת רשת: ${res.status}`;
     }
 
-    return data.choices?.[0]?.message?.content || "❌ לא התקבלה תשובה.";
-  } catch (err) {
-    console.error("❌ שגיאת רשת:", err);
-    return "❌ שגיאה בשליחה לשרת.";
+    const data = await res.json();
+    console.log("📥 תשובה מ־GPT:", data);
+    return data.choices?.[0]?.message?.content || "❌ לא קיבלתי תשובה מהשרת.";
+  } catch (error) {
+    console.error("❌ שגיאה:", error);
+    return "❌ שגיאה בשליחה לשרת: " + error.message;
   }
 }
 
@@ -275,12 +279,16 @@ function startListening() {
   recognition.maxAlternatives = 1;
 
   recognition.onresult = async function (event) {
-    const transcript = event.results[0][0].transcript.trim();
-    console.log("🗣️ זוהה טקסט:", transcript);
-    const reply = await askGPT(transcript);
-    showBanner(reply);
-    speak(reply);
-  };
+  const transcript = event.results[0][0].transcript.trim();
+  if (!transcript) {
+    showBanner("❌ לא קלטתי מה אמרת.");
+    return;
+  }
+  console.log("🗣️ זוהה טקסט:", transcript);
+  const reply = await askGPT(transcript);
+  showBanner(reply);
+  speak(reply);
+};
 
   recognition.onerror = function (event) {
     console.error("🎙️ שגיאה בזיהוי קול:", event.error);
