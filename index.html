@@ -159,7 +159,7 @@ function speak(text) {
   const synth = window.speechSynthesis;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "he-IL";       // עברית
-  utter.rate = 1.6;           // מהירות הדיבור (1 רגיל, 1.2 מהיר יותר)
+  utter.rate = 1.4;           // מהירות הדיבור (1 רגיל, 1.2 מהיר יותר)
   utter.pitch = 1;            // גובה קול (1 רגיל)
   synth.cancel();             // כדי לבטל כל השמעה קודמת
   synth.speak(utter);         // מדבר!
