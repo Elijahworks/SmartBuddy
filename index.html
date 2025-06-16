@@ -151,6 +151,22 @@ function extractPricesFromHTML() {
     return total;
 }
 
+// ✅ טעינת קובץ התגובות החכמות (מ־JSON) לצורך זיהוי תגובות מוכנות מראש
+let responses = [];
+
+fetch('smart_robot_responses.json')
+  .then(res => res.json())
+  .then(data => {
+    responses = data;
+    console.log("✅ responses נטענו:", responses);
+  })
+  .catch(err => {
+    console.error("❌ שגיאה בטעינת תגובות:", err);
+    responses = []; // שים לב שזה לא נשאר undefined
+  });
+
+// ✅ לאחר הטעינה – המערכת תוכל לזהות מילים ולתת תשובות מותאמות לפי הקובץ
+
 document.addEventListener("DOMContentLoaded", loadParticipants);
 
 async function speak(text) {
