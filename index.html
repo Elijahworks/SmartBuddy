@@ -49,8 +49,6 @@
         </div>
         <br><br>
         <hr style="width: 150px; border: 1px solid #ccc; margin: 20px auto;" />
-        <br><br>
-
     </ul>
 
     <h3>שם:</h3>
@@ -289,11 +287,15 @@
       banner.style.display = "block";
     }
 
-    function speak(text) {
-      const msg = new SpeechSynthesisUtterance(text);
-      msg.lang = 'he-IL';
-      window.speechSynthesis.speak(msg);
-    }
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'he-IL';
+  msg.pitch = 1;
+  msg.rate = 0.95;
+  msg.volume = 1; // 1 זה הכי חזק
+  window.speechSynthesis.speak(msg);
+}
+
     </script>
 </body>
 
