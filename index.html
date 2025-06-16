@@ -234,58 +234,64 @@
         }
 
         document.addEventListener("DOMContentLoaded", loadParticipants);
+let responses = [];
 
-      let responses = [];
+// החלף כאן ב־URL האמיתי של הקובץ שלך בסופראבייס
+const SUPABASE_FILE_URL = 'https://fqjfwtspitxhryirivdo.supabase.co/storage/v1/object/public/public123//smart_robot_responses.json';
 
-   fetch('smart_robot_responses.json')
+fetch(SUPABASE_FILE_URL)
   .then(res => res.json()) // ✅ סוגריים חובה
   .then(data => responses = data)
   .catch(() => {
     showBanner("שגיאה בטעינת הקובץ.");
   });
 
+function startListening() {
+  if (!('webkitSpeechRecognition' in window)) {
+    showBanner("זיהוי קולי לא נתמך בדפדפן הזה.");
+    return;
+  }
 
-    function startListening() {
-      const recognition = new webkitSpeechRecognition();
-      recognition.lang = 'he-IL';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'he-IL';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim();
-        respondToUser(transcript);
-      };
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript.trim();
+    respondToUser(transcript);
+  };
 
-      recognition.onerror = function(event) {
-        showBanner("שגיאה: " + event.error);
-      };
+  recognition.onerror = function(event) {
+    showBanner("שגיאה: " + event.error);
+  };
 
-      recognition.start();
-    }
+  recognition.start();
+}
 
-    function respondToUser(userText) {
-      const lower = userText.toLowerCase();
-      let reply = "מה מה אל תדליק אותי  אתה לא מכיר אותי שאני לא יתהפך עליך";
+function respondToUser(userText) {
+  const lower = userText.toLowerCase();
+  let reply = "מה מה אל תדליק אותי  אתה לא מכיר אותי שאני לא יתהפך עליך";
 
-      for (const item of responses) {
-        for (const keyword of item.keywords) {
-          if (lower.includes(keyword)) {
-            reply = item.response;
-            break;
-          }
-        }
-        if (reply !== "לא הצלחתי להבין, נסה שוב.") break;
+  for (const item of responses) {
+    for (const keyword of item.keywords) {
+      if (lower.includes(keyword)) {
+        reply = item.response;
+        break;
       }
-
-      showBanner(reply);
-      speak(reply);
     }
+    if (reply !== "מה מה אל תדליק אותי  אתה לא מכיר אותי שאני לא יתהפך עליך") break;
+  }
 
-    function showBanner(text) {
-      const banner = document.getElementById("banner");
-      banner.textContent = text;
-      banner.style.display = "block";
-    }
+  showBanner(reply);
+  speak(reply);
+}
+
+function showBanner(text) {
+  const banner = document.getElementById("banner");
+  banner.textContent = text;
+  banner.style.display = "block";
+}
 
 function speak(text) {
   const msg = new SpeechSynthesisUtterance(text);
