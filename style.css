@@ -9,6 +9,7 @@ body {
     padding: 0;
     direction: rtl;
     min-height: 100vh;
+    text-align: center;
 }
 
 h1 {
@@ -72,9 +73,7 @@ h3 {
     font-size: 1.15rem;
     text-align: center;
     width: fit-content;
-    /* חשוב כדי שיישור יעבוד נכון */
 }
-
 
 input[type="text"],
 select {
@@ -84,16 +83,12 @@ select {
     border: 1.5px solid #b2bec3;
     border-radius: 7px;
     margin: 8px auto;
-    /* מרכז אופקי */
     background: #f7fafd;
     outline: none;
     transition: border 0.2s;
     display: block;
-    /* דרוש כדי ש-margin: auto יעבוד */
     width: fit-content;
-    /* או אפשר לתת width קבוע */
 }
-
 
 input[type="text"]:focus,
 select:focus {
@@ -156,11 +151,8 @@ tr:last-child td {
 
 .total {
     text-align: center;
-    font-size: 1.17rem;
     color: #fdfdfd;
     font-weight: bolder;
-    margin-bottom: 32px;
-    font-size: 23px !important;
     background: #b795e9;
     padding: 10px 0 13px 0;
     border-radius: 13px;
@@ -168,6 +160,7 @@ tr:last-child td {
     margin-left: auto;
     margin-right: auto;
     box-shadow: 0 1px 7px rgba(90, 36, 180, 0.05);
+    font-size: 1.17rem;
 }
 
 @media (max-width: 700px) {
@@ -177,6 +170,7 @@ tr:last-child td {
         min-height: 100vh;
         height: auto;
         overflow-x: hidden;
+        padding: 0;
     }
 
     h1 {
@@ -195,11 +189,9 @@ tr:last-child td {
     table {
         width: 95vw;
         max-width: 500px;
-        /* אם אתה רוצה להגביה גבול */
         margin-left: auto;
         margin-right: auto;
         text-align: center;
-        /* מיישר את התוכן */
         padding: 0;
     }
 
@@ -220,7 +212,6 @@ tr:last-child td {
     }
 
     .ggg {
-
         margin: 26px auto 20px;
         color: #283593;
         font-weight: 600;
@@ -228,7 +219,6 @@ tr:last-child td {
         text-align: center;
         width: fit-content;
     }
-
 
     button {
         width: 85vw;
@@ -242,22 +232,18 @@ tr:last-child td {
         padding: 10px 0;
         margin-top: 20px;
         margin-bottom: 60px;
-        font-size: 23px !important;
     }
 
-    /* רווח נוסף בסוף הדף לגלילה */
     body::after {
         content: '';
         display: block;
         height: 80px;
-        /* הגדלת הרווח לסיום גלילה נוח גם במקלדת */
     }
 }
 
 #goDownContainer {
     position: fixed;
     bottom: 0 !important;
-    /* ⬅️ גבוה יותר כדי לא להיבלע */
     right: 20px;
     text-align: center;
     z-index: 9999;
@@ -286,7 +272,6 @@ tr:last-child td {
 @media (max-width: 700px) {
     #goDownContainer {
         bottom: calc(env(safe-area-inset-bottom, 0px) + 0px) !important;
-        /*⬅️ קצת יותר גבוה בטלפון*/
         right: 3px;
     }
 
@@ -302,7 +287,6 @@ tr:last-child td {
     }
 }
 
-
 .prohct123 {
     background-color: #3c479977;
     border-radius: 15px;
@@ -313,45 +297,21 @@ tr:last-child td {
     color: #ffffff;
     font-weight: bolder;
     font-size: 5vw;
-    /* יישור אופקי */
 }
 
 .ggg123 {
     opacity: 0.3;
-    /* ערכים בין 0 (שקוף לגמרי) ל־1 (אטום) */
 }
 
- body {
-      font-family: 'Heebo', sans-serif;
-      direction: rtl;
-      text-align: center;
-      margin: 0;
-      padding: 40px;
-      background: #f0f4ff;
-    }
+#banner {
+    margin-top: 24px;
+    padding: 16px;
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 20px;
+    display: none;
+}
 
-    button {
-      font-size: 20px;
-      padding: 16px 24px;
-      background-color: #2979ff;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #1565c0;
-    }
-
-    #banner {
-      margin-top: 24px;
-      padding: 16px;
-      background-color: #e3f2fd;
-      color: #0d47a1;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      font-size: 20px;
-      display: none;
-    }
+/* תיקון כפילויות וסדר קוד */
