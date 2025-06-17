@@ -159,17 +159,22 @@ function speak(text) {
   const synth = window.speechSynthesis;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "he-IL";
-  utter.rate = 1.2;
+  utter.rate = 1.1;
   utter.pitch = 1;
 
-  // נסה להמתין קצת כדי לוודא שהקולות נטענו
-  const voices = synth.getVoices();
-  const voice = voices.find(v => v.lang === "he-IL") || voices[0];
-  if (voice) utter.voice = voice;
-
-  synth.cancel();
-  synth.speak(utter);
+  // הוספת השהיה כדי לוודא טעינת קולות
+  const waitForVoices = setInterval(() => {
+    const voices = synth.getVoices();
+    if (voices.length) {
+      clearInterval(waitForVoices);
+      const voice = voices.find(v => v.lang === "he-IL") || voices[0];
+      if (voice) utter.voice = voice;
+      synth.cancel();
+      synth.speak(utter);
+    }
+  }, 100);
 }
+
 
 
 
